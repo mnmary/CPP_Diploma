@@ -1,11 +1,11 @@
 #pragma once
 #include <pqxx/pqxx>
 /*
-## База данных
-Для выполнения задания рекомендуется использовать базу данных PostgreSQL.
-Для подключения к базе данных рекомендуется использовать библиотеку `libpqxx`.
-Настройки базы данных (хост, порт, название БД, имя пользователя, пароль) следует хранить в ini-файле конфигурации.
-При первом запуске программы «Паук» следует выполнить создание таблиц базы данных, используя запрос `CREATE TABLE IF NOT EXISTS`.
+## Р‘Р°Р·Р° РґР°РЅРЅС‹С…
+Р”Р»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р·Р°РґР°РЅРёСЏ СЂРµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… PostgreSQL.
+Р”Р»СЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С… СЂРµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р±РёР±Р»РёРѕС‚РµРєСѓ `libpqxx`.
+РќР°СЃС‚СЂРѕР№РєРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… (С…РѕСЃС‚, РїРѕСЂС‚, РЅР°Р·РІР°РЅРёРµ Р‘Р”, РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РїР°СЂРѕР»СЊ) СЃР»РµРґСѓРµС‚ С…СЂР°РЅРёС‚СЊ РІ ini-С„Р°Р№Р»Рµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
+РџСЂРё РїРµСЂРІРѕРј Р·Р°РїСѓСЃРєРµ РїСЂРѕРіСЂР°РјРјС‹ В«РџР°СѓРєВ» СЃР»РµРґСѓРµС‚ РІС‹РїРѕР»РЅРёС‚СЊ СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС† Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РёСЃРїРѕР»СЊР·СѓСЏ Р·Р°РїСЂРѕСЃ `CREATE TABLE IF NOT EXISTS`.
 */
 class DB_Client
 {
@@ -15,7 +15,7 @@ private:
 	
     std::string createConnectionString()
     {
-        //Настройки базы данных (хост, порт, название БД, имя пользователя, пароль) следует хранить в ini-файле конфигурации.
+        //РќР°СЃС‚СЂРѕР№РєРё Р±Р°Р·С‹ РґР°РЅРЅС‹С… (С…РѕСЃС‚, РїРѕСЂС‚, РЅР°Р·РІР°РЅРёРµ Р‘Р”, РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РїР°СЂРѕР»СЊ) СЃР»РµРґСѓРµС‚ С…СЂР°РЅРёС‚СЊ РІ ini-С„Р°Р№Р»Рµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё.
         
         //"host=localhost port=5432 dbname=postgres user=postgres password=postgres"
         std::string res = "host = "+ DBHost +" port= "+ DBPort +" dbname = " + DBName + " user = " + DBUser + " password = " + DBPassword;
@@ -33,7 +33,7 @@ private:
 public:
     DB_Client(const std::string& DBHost, const std::string& DBPort, const std::string& DBName, const std::string& DBUser, const std::string& DBPassword) : DBHost{ DBHost }, DBPort{ DBPort }, DBName{ DBName }, DBUser{ DBUser }, DBPassword{ DBPassword }
     {
-        //При первом запуске программы «Паук» следует выполнить создание таблиц базы данных, используя запрос `CREATE TABLE IF NOT EXISTS`.
+        //РџСЂРё РїРµСЂРІРѕРј Р·Р°РїСѓСЃРєРµ РїСЂРѕРіСЂР°РјРјС‹ В«РџР°СѓРєВ» СЃР»РµРґСѓРµС‚ РІС‹РїРѕР»РЅРёС‚СЊ СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС† Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РёСЃРїРѕР»СЊР·СѓСЏ Р·Р°РїСЂРѕСЃ `CREATE TABLE IF NOT EXISTS`.
         connectionString = createConnectionString();
         pqxx::connection conn(connectionString);
         pqxx::work transact(conn);
@@ -63,7 +63,7 @@ public:
 
     bool findUrl(const std::string& url)
     {
-        //ищем ссылку в таблице ссылок
+        //РёС‰РµРј СЃСЃС‹Р»РєСѓ РІ С‚Р°Р±Р»РёС†Рµ СЃСЃС‹Р»РѕРє
         pqxx::connection conn(connectionString);
         pqxx::work transact{ conn };
         bool id = transact.query_value<bool>("SELECT EXISTS(SELECT id FROM urls WHERE url = \'" + url + "\');");
@@ -72,30 +72,30 @@ public:
 
     void addLink(const std::map<std::string, unsigned int>& words, const std::string& link)
     {
-        //проверяем есть ли такая ссылка
+        //РїСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё С‚Р°РєР°СЏ СЃСЃС‹Р»РєР°
         if (findUrl(link))
         {
             return; 
         }
 
-        //подключаемся к БД
+        //РїРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє Р‘Р”
         pqxx::connection conn(connectionString);
         pqxx::work transact{ conn };
 
-        //добавляем новую ссылку
+        //РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ СЃСЃС‹Р»РєСѓ
         transact.exec_params("INSERT INTO urls (url) VALUES ( $1 )", link);
         transact.commit();
 
         for (const auto& [key, value] : words)
         {
-            //проверяем есть ли такое слово
+            //РїСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё С‚Р°РєРѕРµ СЃР»РѕРІРѕ
             if (!findKeyword(key))
             {
-                //добавим новое слово
+                //РґРѕР±Р°РІРёРј РЅРѕРІРѕРµ СЃР»РѕРІРѕ
                 transact.exec_params("INSERT INTO keywords (keyword) VALUES ( $1 )", key);
                 transact.commit();
             }
-            //создаем новую пару в третьей таблице
+            //СЃРѕР·РґР°РµРј РЅРѕРІСѓСЋ РїР°СЂСѓ РІ С‚СЂРµС‚СЊРµР№ С‚Р°Р±Р»РёС†Рµ
             transact.exec_params("INSERT INTO keyword_urs_qty (id_keyword, id_url, quantity) VALUES ("
                         "(SELECT id FROM keywords WHERE keyword = $1),"
                 "(SELECT id FROM urls WHERE url = $2), $3)", key, link, std::to_string(value));
@@ -105,17 +105,17 @@ public:
 
     std::map<std::string, int> getUrl(const std::string& keyword)
     {
-        //ищем ссылки по ключевому слову
+        //РёС‰РµРј СЃСЃС‹Р»РєРё РїРѕ РєР»СЋС‡РµРІРѕРјСѓ СЃР»РѕРІСѓ
         std::map<std::string, int> result;
 
-        //подключаемся к БД
+        //РїРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє Р‘Р”
         pqxx::connection conn(connectionString);
         pqxx::work transact{ conn };
 
-        //ключевое слово для поиска
+        //РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ РґР»СЏ РїРѕРёСЃРєР°
         std::string key_esc = transact.esc(keyword);
         
-        //выбираем все ссылки по ключевому слову
+        //РІС‹Р±РёСЂР°РµРј РІСЃРµ СЃСЃС‹Р»РєРё РїРѕ РєР»СЋС‡РµРІРѕРјСѓ СЃР»РѕРІСѓ
         for (auto [url, qty] : transact.query<std::string, int>
             ("SELECT u.url, kuq.quantity "
                 "FROM urls u "
@@ -125,6 +125,6 @@ public:
         {
             result[url] = qty;
         };
-        return result;//сколько раз ключевое слово встречалось на странице
+        return result;//СЃРєРѕР»СЊРєРѕ СЂР°Р· РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ РІСЃС‚СЂРµС‡Р°Р»РѕСЃСЊ РЅР° СЃС‚СЂР°РЅРёС†Рµ
     }
 };

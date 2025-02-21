@@ -11,22 +11,22 @@
 #include <algorithm>
 
 /*
-Утилиты
+РЈС‚РёР»РёС‚С‹
 */
 
-//список символов для проверки слова
+//СЃРїРёСЃРѕРє СЃРёРјРІРѕР»РѕРІ РґР»СЏ РїСЂРѕРІРµСЂРєРё СЃР»РѕРІР°
 const std::string letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 enum class TProtocol
 {
-	//типы протоколов
+	//С‚РёРїС‹ РїСЂРѕС‚РѕРєРѕР»РѕРІ
 	HTTP = 0,
 	HTTPS = 1
 };
 
 struct Link
 {
-	//ссылка
+	//СЃСЃС‹Р»РєР°
 	TProtocol protocol;
 	std::string host;
 	std::string query;
@@ -41,7 +41,7 @@ struct Link
 
 struct TqueueItem
 {
-	//элемент очереди ссылок
+	//СЌР»РµРјРµРЅС‚ РѕС‡РµСЂРµРґРё СЃСЃС‹Р»РѕРє
 	std::string url;
 	int dept;
 
@@ -64,14 +64,14 @@ bool isAlpha(char s)
 //trim
 void trim(std::string& s)
 {
-	//убираем пробелы в начале и в конце строки
+	//СѓР±РёСЂР°РµРј РїСЂРѕР±РµР»С‹ РІ РЅР°С‡Р°Р»Рµ Рё РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 	s.erase(0, s.find_first_not_of(" \t"));
 	s.erase(s.find_last_not_of(" \t") + 1);
 }
 
 void toLower(std::string& value)
 {
-	//преобразуем строки в символы нижнего регистра
+	//РїСЂРµРѕР±СЂР°Р·СѓРµРј СЃС‚СЂРѕРєРё РІ СЃРёРјРІРѕР»С‹ РЅРёР¶РЅРµРіРѕ СЂРµРіРёСЃС‚СЂР°
 	std::transform(value.begin(), value.end(), value.begin(),
 		[](unsigned char c) 
 		{ 
@@ -111,7 +111,7 @@ std::string convert_to_utf8(const std::string& str)
 
 std::string LinkToURL(Link link)
 {
-	//преобразуем структуру ссылки в строку
+	//РїСЂРµРѕР±СЂР°Р·СѓРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ СЃСЃС‹Р»РєРё РІ СЃС‚СЂРѕРєСѓ
 	if (link.protocol == TProtocol::HTTP)
 	{
 		return("http://" + link.host + link.query);

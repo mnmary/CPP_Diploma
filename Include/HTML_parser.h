@@ -25,7 +25,7 @@ private:
 
 	std::vector<std::string> extractLink()
 	{
-		//ищем все ссылки в строке и сохраняем их в массив
+		//РёС‰РµРј РІСЃРµ СЃСЃС‹Р»РєРё РІ СЃС‚СЂРѕРєРµ Рё СЃРѕС…СЂР°РЅСЏРµРј РёС… РІ РјР°СЃСЃРёРІ
 		std::regex htmlLink("<a href=\"(.*?)\"");
 		std::vector<std::string> arrayLinks;
 
@@ -35,10 +35,10 @@ private:
 		for (std::sregex_iterator i = links_begin; i != links_end; ++i)
 		{
 			std::smatch sm = *i;
-			if (sm[1].str().at(0) != '#')//такая ссылка не пойдет
+			if (sm[1].str().at(0) != '#')//С‚Р°РєР°СЏ СЃСЃС‹Р»РєР° РЅРµ РїРѕР№РґРµС‚
 			{
 				Link tmplink = UrlToLink(sm[1].str(), link);
-				//если ссылка уникальна - запишем ее
+				//РµСЃР»Рё СЃСЃС‹Р»РєР° СѓРЅРёРєР°Р»СЊРЅР° - Р·Р°РїРёС€РµРј РµРµ
 				if (std::find(arrayLinks.begin(), arrayLinks.end(), LinkToURL(tmplink)) == arrayLinks.end())
 				{
 					arrayLinks.push_back(LinkToURL(tmplink));
@@ -49,7 +49,7 @@ private:
 	}
 	std::map<std::string, unsigned int> extractWords(const std::string& html)
 	{	
-		//формируем массив слов с количеством повторений каждого
+		//С„РѕСЂРјРёСЂСѓРµРј РјР°СЃСЃРёРІ СЃР»РѕРІ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј РїРѕРІС‚РѕСЂРµРЅРёР№ РєР°Р¶РґРѕРіРѕ
 		std::map<std::string, unsigned int> wordArray;
 
 		const int minSize = 3;
@@ -102,8 +102,8 @@ private:
 
 	Link UrlToLink(const std::string& html)
 	{
-		//разбираем стартовую ссылку
-		//формируем структуру ссылки
+		//СЂР°Р·Р±РёСЂР°РµРј СЃС‚Р°СЂС‚РѕРІСѓСЋ СЃСЃС‹Р»РєСѓ
+		//С„РѕСЂРјРёСЂСѓРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ СЃСЃС‹Р»РєРё
 		std::regex ur("(https?)?(:?\/\/)?([[:alnum:]-_]+\..*?)?(\/.*)");
 
 		std::smatch sm;
@@ -147,9 +147,9 @@ private:
 
 	Link UrlToLink(const std::string& html, const Link& url)
 	{
-		//преобразуем дочернюю ссылку в структуру ссылки
-		//учтем, что в дочерней ссылке может не быть нужных параметров
-		//берем их из родительской ссылки
+		//РїСЂРµРѕР±СЂР°Р·СѓРµРј РґРѕС‡РµСЂРЅСЋСЋ СЃСЃС‹Р»РєСѓ РІ СЃС‚СЂСѓРєС‚СѓСЂСѓ СЃСЃС‹Р»РєРё
+		//СѓС‡С‚РµРј, С‡С‚Рѕ РІ РґРѕС‡РµСЂРЅРµР№ СЃСЃС‹Р»РєРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ РЅСѓР¶РЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ
+		//Р±РµСЂРµРј РёС… РёР· СЂРѕРґРёС‚РµР»СЊСЃРєРѕР№ СЃСЃС‹Р»РєРё
 		std::regex ur("(https?)?(:?\/\/)?([[:alnum:]_-]+\.[^\/]+)?(\/.*(#[^\/]+$)?)");
 
 		std::smatch sm;
@@ -234,7 +234,7 @@ public:
 
 	std::string GetURL()
 	{
-		//преобразуем структуру ссылки в строку
+		//РїСЂРµРѕР±СЂР°Р·СѓРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ СЃСЃС‹Р»РєРё РІ СЃС‚СЂРѕРєСѓ
 		if (link.protocol == TProtocol::HTTP)
 		{
 			return("http://" + link.host + link.query);

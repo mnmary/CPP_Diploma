@@ -14,7 +14,7 @@
 #include "Utils.h"
 
 /*
-Изнутри программа «Паук» представляет из себя HTTP-клиент, который переходит по ссылкам, скачивает HTML-страницы и анализирует их содержимое, добавляя записи в базу данных.
+РР·РЅСѓС‚СЂРё РїСЂРѕРіСЂР°РјРјР° В«РџР°СѓРєВ» РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ РёР· СЃРµР±СЏ HTTP-РєР»РёРµРЅС‚, РєРѕС‚РѕСЂС‹Р№ РїРµСЂРµС…РѕРґРёС‚ РїРѕ СЃСЃС‹Р»РєР°Рј, СЃРєР°С‡РёРІР°РµС‚ HTML-СЃС‚СЂР°РЅРёС†С‹ Рё Р°РЅР°Р»РёР·РёСЂСѓРµС‚ РёС… СЃРѕРґРµСЂР¶РёРјРѕРµ, РґРѕР±Р°РІР»СЏСЏ Р·Р°РїРёСЃРё РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С….
 */
 
 namespace beast = boost::beast;
@@ -43,7 +43,7 @@ bool isText(const boost::beast::multi_buffer::const_buffers_type& b)
 
 std::string getContent(const Link& url)
 {
-	//получим содержимое HTML-страницы по ссылке
+	//РїРѕР»СѓС‡РёРј СЃРѕРґРµСЂР¶РёРјРѕРµ HTML-СЃС‚СЂР°РЅРёС†С‹ РїРѕ СЃСЃС‹Р»РєРµ
 	std::string result;
 
 	try
@@ -52,15 +52,15 @@ std::string getContent(const Link& url)
 		std::string query = url.query;
 
 		net::io_context ioc;
-		//проверим тип протокола!!
+		//РїСЂРѕРІРµСЂРёРј С‚РёРї РїСЂРѕС‚РѕРєРѕР»Р°!!
 		if (url.protocol == TProtocol::HTTPS)
 		{
-			//защищенное соединение по порту 443
+			//Р·Р°С‰РёС‰РµРЅРЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РїРѕ РїРѕСЂС‚Сѓ 443
 			ssl::context ctx(ssl::context::tlsv13_client);
 			ctx.set_default_verify_paths();
 
 			beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
-			stream.set_verify_mode(ssl::verify_none);//отключим проверку сертификата
+			stream.set_verify_mode(ssl::verify_none);//РѕС‚РєР»СЋС‡РёРј РїСЂРѕРІРµСЂРєСѓ СЃРµСЂС‚РёС„РёРєР°С‚Р°
 
 			stream.set_verify_callback([](bool preverified, ssl::verify_context& ctx) {
 				return true; // Accept any certificate
@@ -76,7 +76,7 @@ std::string getContent(const Link& url)
 			get_lowest_layer(stream).connect(resolver.resolve({ host, "https" }));
 			get_lowest_layer(stream).expires_after(std::chrono::seconds(30));
 
-			//посылаем Get-запрос
+			//РїРѕСЃС‹Р»Р°РµРј Get-Р·Р°РїСЂРѕСЃ
 			http::request<http::empty_body> req{ http::verb::get, query, 11 };
 			req.set(http::field::host, host);
 			req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
@@ -84,12 +84,12 @@ std::string getContent(const Link& url)
 			stream.handshake(ssl::stream_base::client);
 			http::write(stream, req);
 			
-			//читаем ответ
+			//С‡РёС‚Р°РµРј РѕС‚РІРµС‚
 			beast::flat_buffer buffer;
 			http::response<http::dynamic_body> res;
 			http::read(stream, buffer, res);
 
-			//проверим на ошибки
+			//РїСЂРѕРІРµСЂРёРј РЅР° РѕС€РёР±РєРё
 			if (isText(res.body().data()))
 			{
 				result = buffers_to_string(res.body().data());
@@ -98,7 +98,7 @@ std::string getContent(const Link& url)
 			{
 				std::cout << "This is not a text link, bailing out..." << std::endl;
 			}
-			//отключаемся
+			//РѕС‚РєР»СЋС‡Р°РµРјСЃСЏ
 			beast::error_code ec;
 			stream.shutdown(ec);
 			if (ec == net::error::eof) 
@@ -113,25 +113,25 @@ std::string getContent(const Link& url)
 		}
 		else
 		{
-			//обычное соединение по порту 80
+			//РѕР±С‹С‡РЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РїРѕ РїРѕСЂС‚Сѓ 80
 			tcp::resolver resolver(ioc);
 			beast::tcp_stream stream(ioc);
 
 			auto const results = resolver.resolve(host, "http");
 
 			stream.connect(results);
-			//посылаем Get-запрос
+			//РїРѕСЃС‹Р»Р°РµРј Get-Р·Р°РїСЂРѕСЃ
 			http::request<http::string_body> req{ http::verb::get, query, 11 };
 			req.set(http::field::host, host);
 			req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 			http::write(stream, req);
 
-			//читаем ответ
+			//С‡РёС‚Р°РµРј РѕС‚РІРµС‚
 			beast::flat_buffer buffer;
 			http::response<http::dynamic_body> res;
 			http::read(stream, buffer, res);
 			
-			//проверяем на ошибки
+			//РїСЂРѕРІРµСЂСЏРµРј РЅР° РѕС€РёР±РєРё
 			if (isText(res.body().data()))
 			{
 				result = buffers_to_string(res.body().data());
@@ -140,7 +140,7 @@ std::string getContent(const Link& url)
 			{
 				std::cout << "This is not a text link, bailing out..." << std::endl;
 			}
-			//отключаемся
+			//РѕС‚РєР»СЋС‡Р°РµРјСЃСЏ
 			beast::error_code ec;
 			stream.socket().shutdown(tcp::socket::shutdown_both, ec);
 
