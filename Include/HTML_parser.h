@@ -11,17 +11,7 @@
 
 #include "Utils.h"
 #include "DB_Client.h"
-/*
-## Индексация
-Индексатор удаляет HTML-теги из страницы, а затем удаляет все знаки препинания, переносы строк, табуляцию, оставляя только чистый текст. 
-Затем индексатор анализирует текст на странице и сохраняет информацию в базе данных для того, чтобы вести поиск по этим данным.
 
-Индексатор выполняет следующие действия для страницы:
-* страница очищается от HTML-тегов, от знаков препинания, табуляции, переносов строк и т. д. Остаются только слова, разделённые пробелами;
-* слова переводятся в нижний регистр;
-* анализируется частотность слов в тексте. Индексатор считает, сколько раз встречается каждое слово в тексте;
-* информация о словах и о частотности сохраняется в базу данных.
-*/
 
 class HTML_Parser
 {
@@ -47,7 +37,7 @@ private:
 			std::smatch sm = *i;
 			if (sm[1].str().at(0) != '#')//такая ссылка не пойдет
 			{
-				Link tmplink = UrlToLink(sm[1].str(), link);
+				Link tmplink = this->UrlToLink(sm[1].str(), link);
 				//если ссылка уникальна - запишем ее
 				if (std::find(arrayLinks.begin(), arrayLinks.end(), LinkToURL(tmplink)) == arrayLinks.end())
 				{
@@ -87,25 +77,28 @@ private:
 				++begin;
 				if (begin >= end) break;
 			}
+			if (begin >= end) break;//OK
+			
 			while (*begin != '<')
 			{
-				if (begin >= end) break;
-
 				word.erase();
 				while (isAlpha(*begin))
 				{
 					word += *begin;
 					++begin;
-
 					if (begin >= end) break;
 				}
+				if (begin >= end) break;//OK
+				
 				if (word.length() > minSize)
 				{
 					toLower(word);
 					wordArray[word]++;
 				}
 				++begin;
+				if (begin >= end) break;//OK
 			}
+			if (begin >= end) break;//OK
 		}
 		return wordArray;
 	}

@@ -52,7 +52,7 @@ void doWork(DB_Client& db)
 				//если глубина рекурсии страницы еще не 0, то все ссылки со страницы надо добавить в очередь на скачивание с глубиной рекурсии -1
 				if (work.dept > 0)
 				{
-					//std::cout << "depth > 0 links count = " << parser.getSubLinks().size() << std::endl;
+					std::cout << "depth > 0 links count = " << parser.getSubLinks().size() << std::endl;
 					for (auto& subLink : parser.getSubLinks())
 					{
 						if (!db.findUrl(subLink))
@@ -63,7 +63,7 @@ void doWork(DB_Client& db)
 							qSubLink.dept = work.dept - 1;
 							//пушим ссылки на скачиваниес глубиной рекурсии -1
 							queue.push(qSubLink);
-							//std::cout << std::this_thread::get_id() << " PUSH " << qSubLink.url << " depth = " << qSubLink.dept << "\n";
+							std::cout << std::this_thread::get_id() << " PUSH " << qSubLink.url << " depth = " << qSubLink.dept << "\n";
 						}
 					}
 				}

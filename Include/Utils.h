@@ -122,3 +122,59 @@ std::string LinkToURL(Link link)
 	}
 
 }
+
+Link UrlToLink(const std::string& html, const Link& parentUrl)
+{
+	//преобразуем дочернюю ссылку в структуру ссылки
+	//учтем, что в дочерней ссылке может не быть нужных параметров
+	//берем их из родительской ссылки
+	std::regex ur("(https?)?(:?\/\/)?([[:alnum:]_-]+\.[^\/]+)?(\/.*(#[^\/]+$)?)");
+
+	std::smatch sm;
+	std::regex_search(html, sm, ur);
+
+	Link tmp_link;
+
+
+	if (sm[1].length() != 0)
+	{
+		if (sm[1].str() == "http")
+		{
+			tmp_link.protocol = TProtocol::HTTP;
+		}
+		else if (sm[1].str() == "https")
+		{
+			tmp_link.protocol = TProtocol::HTTPS;
+		}
+	}
+	else
+	{
+		tmp_link.protocol = parentUrl.protocol;
+	};
+
+	if (sm[3].length() != 0)
+	{
+		tmp_link.host = sm[3].str();
+	}
+	else
+	{
+		tmp_link.host = parentUrl.host;
+	};
+
+	if (sm[4].length() != 0)
+	{
+		if (sm[5].length() == 0)
+		{
+			tmp_link.query = sm[4].str();
+		}
+		else
+		{
+			tmp_link.query = sm[4].str().substr(0, sm[4].length() - sm[5].length());
+		}
+	}
+	else
+	{
+		tmp_link.query = '/';
+	}
+	return tmp_link;
+}

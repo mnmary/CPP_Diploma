@@ -53,7 +53,7 @@ int main()
 		std::string dbPort = ini_file.get_value("DataBase.bd_port");
 		std::string user = ini_file.get_value("DataBase.bd_user");
 		std::string pass = ini_file.get_value("DataBase.bd_pass");
-		DB_Client db(host, dbPort, user, name, pass);
+		DB_Client db(host, dbPort, name, user, pass);//OK
 
 		//Порт, на котором будет запущен HTTP-сервер, должен взять из ini-файла конфигурации.
 		unsigned short port = static_cast<unsigned short>(std::stoi(ini_file.get_value("Server.server_port")));
