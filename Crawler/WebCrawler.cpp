@@ -34,45 +34,42 @@ bool stop{ false };
 void doWork(DB_Client& db)
 {
 	std::cout << "thread id: " << std::this_thread::get_id() << std::endl;
-	while (!stop)
+	while (!queue.empty())
 	{
 		TqueueItem work;
 		std::unique_lock<std::mutex> lock(mutex);
 		
-		if (!queue.empty())
+		//извлекаем ссылку на скачивание
+		work = queue.pop();
+
+		std::cout << std::this_thread::get_id() << " POP " << work.url << " depth = " << work.dept << " size = " << queue.getSize() << "\n";
+
+		HTML_Parser parser(db, work.url);
+		if (parser.parse())
 		{
-			//извлекаем ссылку на скачивание
-			work = queue.pop();
-			std::cout << std::this_thread::get_id() << " POP " << work.url << " depth = " << work.dept << " " << "\n";
-			
-			HTML_Parser parser(db, work.url);
-			if (parser.parse())
+			std::cout << "link = " << parser.GetURL() << " links count " << parser.getSubLinks().size() << std::endl;
+			//если глубина рекурсии страницы еще не 0, то все ссылки со страницы надо добавить в очередь на скачивание с глубиной рекурсии -1
+			if (work.dept > 0)
 			{
-				std::cout << "link = " << parser.GetURL() << " links count " << parser.getSubLinks().size() << std::endl;
-				//если глубина рекурсии страницы еще не 0, то все ссылки со страницы надо добавить в очередь на скачивание с глубиной рекурсии -1
-				if (work.dept > 0)
+				std::cout << "depth > 0 links count = " << parser.getSubLinks().size() << std::endl;
+				for (auto& subLink : parser.getSubLinks())
 				{
-					std::cout << "depth > 0 links count = " << parser.getSubLinks().size() << std::endl;
-					for (auto& subLink : parser.getSubLinks())
+					if (!db.findUrl(subLink))
 					{
-						if (!db.findUrl(subLink))
-						{
-							//если нет такой ссылки в базе данных
-							TqueueItem qSubLink;
-							qSubLink.url = subLink;
-							qSubLink.dept = work.dept - 1;
-							//пушим ссылки на скачиваниес глубиной рекурсии -1
-							queue.push(qSubLink);
-							std::cout << std::this_thread::get_id() << " PUSH " << qSubLink.url << " depth = " << qSubLink.dept << "\n";
-						}
+						//если нет такой ссылки в базе данных
+						TqueueItem qSubLink;
+						qSubLink.url = subLink;
+						qSubLink.dept = work.dept - 1;
+						//пушим ссылки на скачиваниес глубиной рекурсии -1
+						queue.push(qSubLink);
+						std::cout << std::this_thread::get_id() << " PUSH " << qSubLink.url << " depth = " << qSubLink.dept << "\n";
 					}
 				}
 			}
-			
 		}
-		
+
 		lock.unlock();
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 }
 
@@ -148,10 +145,6 @@ int main()
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 		
 		//destroy		
-		std::unique_lock<std::mutex> lock(mutex);
-		stop = true;
-		lock.unlock();
-
 		for (auto& t : arrThread)
 		{
 			t.join();

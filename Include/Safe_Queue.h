@@ -35,6 +35,11 @@ public:
 		std::unique_lock<std::mutex> lock(mutex);
 		return works.empty();
 	};
+	int getSize()
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+		return works.size();
+	}
 
 
 };
